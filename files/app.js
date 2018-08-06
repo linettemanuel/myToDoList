@@ -6,16 +6,9 @@ const next = document.querySelector("#next");
 const previous = document.querySelector("#previous");
 let dailyRecord = document.querySelector(".counter_one");
 let completeTask = document.querySelector(".counter_two");
+let counterOne = 0;
+let counterTwo = 0;
 
-
-
-const numbers = [];
-let i = 0;
-
-while (i < 100){
-    numbers.push(i)
-    i++;
-}
 
 loadEventListeners();
 
@@ -41,13 +34,17 @@ function addTask(e) {
     link.innerHTML = "Done";
     link.className = "btn no-text-deco";
     li.appendChild(link);
-
     taskList.appendChild(li);
 
     taskInput.value = "";
 
+    counterTwo = counterTwo + 1;
+    counterChanges()
+
     e.preventDefault();
 };
+
+
 
 function nextTask(e) {
 
@@ -71,11 +68,21 @@ function clearTask(e) {
     const clearBtn = document.querySelectorAll(".btn");
 
     if (e.target.classList.contains("btn")) {
-        e.target.parentElement.remove()   
+        e.target.parentElement.remove();
+        counterOne = counterOne + 1;
+        dailyRecord.innerHTML = counterOne;
+
+        counterChanges();
     }
     
 
 
     e.preventDefault();
 
+}
+
+function counterChanges() {
+    if (counterOne != 0) {
+        completeTask.innerHTML = Math.round(counterOne/counterTwo * 100) + "%";
+    }
 }
