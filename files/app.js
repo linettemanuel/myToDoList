@@ -42,12 +42,26 @@ function getTasks() {
         taskList.appendChild(li);    
     })
 
-    dailyRecords = JSON.parse(localStorage.getItem("dailyRecords"));
-    dailyRecord.innerHTML = dailyRecords;
+    if (JSON.parse(localStorage.getItem("dailyRecords")) !== null) {
+        dailyRecords = JSON.parse(localStorage.getItem("dailyRecords"));
+        dailyRecord.innerHTML = dailyRecords;
+        counterOne = JSON.parse(localStorage.getItem("dailyRecords"))[0];
+    } else {
+        dailyRecord.innerHTML = 0;
+    }
 
-    completedTask = JSON.parse(localStorage.getItem("completedTask"));
-    completeTask.innerHTML = completedTask;
+    if (JSON.parse(localStorage.getItem("completedTask")) !== null) {
+        completedTask = JSON.parse(localStorage.getItem("completedTask"));
+        completeTask.innerHTML = completedTask;
+    } else {
+        completeTask.innerHTML = 0 + "%";
+    }
 
+    if (JSON.parse(localStorage.getItem("countersTwo")) !== null){
+        counterTwo = JSON.parse(localStorage.getItem("countersTwo"))[0];
+    } else {
+        counterTwo = 0;
+    }
 }
 
 function addTask(e) {
@@ -70,10 +84,10 @@ function addTask(e) {
     counterTwo = counterTwo + 1;
     counterChanges();
 
+    storeCounterTwo(counterTwo);
     storeTask(taskInput.value);
 
     taskInput.value = "";
-
 
     e.preventDefault();
 }
@@ -83,29 +97,32 @@ function storeTask(task) {
     if (localStorage.getItem("tasks") === null) {
         tasks = [];
     } else {
-        tasks = JSON.parse(localStorage.getItem("tasks"))
+        tasks = JSON.parse(localStorage.getItem("tasks"));
     }
     tasks.push(task);
     localStorage.setItem("tasks", JSON.stringify(tasks));
-
-    console.log(tasks);
     
 }
 
 function storeDailyRecord(record) {
     let dailyRecords = [];
-    dailyRecords.push(record)
+    dailyRecords.push(record);
 
     localStorage.setItem("dailyRecords", JSON.stringify(dailyRecords));
-    console.log(dailyRecords);
 }
 
 function storeCompleteTask(record) {
     let completedTask = [];
-    completedTask.push(record)
+    completedTask.push(record);
 
     localStorage.setItem("completedTask", JSON.stringify(completedTask));
-    console.log(completedTask);
+}
+
+function storeCounterTwo (record) {
+    let countersTwo = [];
+    countersTwo.push(record);
+
+    localStorage.setItem("countersTwo", JSON.stringify(countersTwo));
 }
 
 function nextTask(e) {
@@ -162,7 +179,6 @@ function removeFromStore(taskItem) {
     });
 
     localStorage.setItem("tasks", JSON.stringify(tasks));
-    console.log(tasks);
 }
 
 function counterChanges() {
