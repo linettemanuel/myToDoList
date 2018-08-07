@@ -13,11 +13,42 @@ let counterTwo = 0;
 loadEventListeners();
 
 function loadEventListeners() {
+    document.addEventListener("DOMContentLoaded", getTasks);
     submitBtn.addEventListener("click", addTask);
     next.addEventListener("click", nextTask);
     previous.addEventListener("click", previousTask);
     taskList.addEventListener("click", clearTask);
 };
+
+function getTasks() {
+    let tasks;
+    if (localStorage.getItem("tasks") === null) {
+        tasks = [];
+    } else {
+        tasks = JSON.parse(localStorage.getItem("tasks"));
+    }
+
+    tasks.forEach(function (task) {
+        const li = document.createElement("li");
+        li.className = "tasks-item";
+        const name = document.createElement("h1");
+        name.className = "space"
+        name.innerHTML = String(task).toUpperCase();
+        li.appendChild(name);
+        const link = document.createElement("p");
+        link.innerHTML = "Done";
+        link.className = "btn no-text-deco";
+        li.appendChild(link);
+        taskList.appendChild(li);    
+    })
+
+    dailyRecords = JSON.parse(localStorage.getItem("dailyRecords"));
+    dailyRecord.innerHTML = dailyRecords;
+
+    completedTask = JSON.parse(localStorage.getItem("completedTask"));
+    completeTask.innerHTML = completedTask;
+
+}
 
 function addTask(e) {
     if(taskInput.value === "") {
@@ -36,15 +67,46 @@ function addTask(e) {
     li.appendChild(link);
     taskList.appendChild(li);
 
+    counterTwo = counterTwo + 1;
+    counterChanges();
+
+    storeTask(taskInput.value);
+
     taskInput.value = "";
 
-    counterTwo = counterTwo + 1;
-    counterChanges()
 
     e.preventDefault();
-};
+}
 
+function storeTask(task) {
+    let tasks;
+    if (localStorage.getItem("tasks") === null) {
+        tasks = [];
+    } else {
+        tasks = JSON.parse(localStorage.getItem("tasks"))
+    }
+    tasks.push(task);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 
+    console.log(tasks);
+    
+}
+
+function storeDailyRecord(record) {
+    let dailyRecords = [];
+    dailyRecords.push(record)
+
+    localStorage.setItem("dailyRecords", JSON.stringify(dailyRecords));
+    console.log(dailyRecords);
+}
+
+function storeCompleteTask(record) {
+    let completedTask = [];
+    completedTask.push(record)
+
+    localStorage.setItem("completedTask", JSON.stringify(completedTask));
+    console.log(completedTask);
+}
 
 function nextTask(e) {
 
@@ -68,21 +130,44 @@ function clearTask(e) {
     const clearBtn = document.querySelectorAll(".btn");
 
     if (e.target.classList.contains("btn")) {
-        e.target.parentElement.remove();
-        counterOne = counterOne + 1;
-        dailyRecord.innerHTML = counterOne;
+        if (confirm("Is this task truly done?")) {
+            e.target.parentElement.remove();
+            counterOne = counterOne + 1;
+            dailyRecord.innerHTML = counterOne;
 
-        counterChanges();
+            storeDailyRecord(counterOne);
+            counterChanges();
+            removeFromStore(e.target.parentElement.children[0]);
+        }
+
     }
-    
-
 
     e.preventDefault();
 
 }
 
+function removeFromStore(taskItem) {
+    let tasks;
+    if (localStorage.getItem("tasks") === null) {
+        tasks = [];
+    } else {
+        tasks = JSON.parse(localStorage.getItem("tasks"));
+    }
+
+    tasks.forEach(function (task, index) {
+        if(taskItem.textContent === task.toUpperCase()) {
+            tasks.splice(index, 1);
+        }
+        
+    });
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    console.log(tasks);
+}
+
 function counterChanges() {
     if (counterOne != 0) {
         completeTask.innerHTML = Math.round(counterOne/counterTwo * 100) + "%";
+        storeCompleteTask(completeTask.innerHTML);
     }
 }
